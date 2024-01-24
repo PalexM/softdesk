@@ -17,11 +17,22 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
 
 class Contributor(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    # You can add more fields such as role or permission type if needed
+    project = models.ForeignKey(
+        Project, related_name="contributors", on_delete=models.CASCADE
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "project"], name="unique_contributor_project"
+            )
+        ]
 
 
 class Issue(models.Model):
@@ -38,15 +49,26 @@ class Issue(models.Model):
     tag = models.CharField(max_length=7, choices=TAG_CHOICES)
     priority = models.CharField(max_length=6, choices=PRIORITY_CHOICES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="TODO")
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        Project, related_name="issues", on_delete=models.CASCADE
+    )
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    assigned_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="assigned_issues",
+    )
     created_time = models.DateTimeField(auto_now_add=True)
-    # Optionally, you can add a field for assigned user if issues are to be assigned
+
+    def __str__(self):
+        return self.title
 
 
 class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.TextField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
+    issue = models.ForeignKey(Issue, related_name="comments", on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)

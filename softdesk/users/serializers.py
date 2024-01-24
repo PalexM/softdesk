@@ -9,7 +9,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("username", "password", "email", "date_of_birth")
+        fields = (
+            "id",
+            "username",
+            "password",
+            "email",
+            "date_of_birth",
+            "can_be_contacted",
+            "can_data_be_shared",
+            "last_connected",
+        )
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate_date_of_birth(self, value):
@@ -36,11 +45,18 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return parsed_date
 
     def create(self, validated_data):
-        # Create the user
         user = CustomUser.objects.create_user(
             username=validated_data["username"],
             email=validated_data["email"],
             password=validated_data["password"],
-            date_of_birth=validated_data["date_of_birth"],  # Save the parsed date
+            date_of_birth=validated_data["date_of_birth"],
+            can_be_contacted=validated_data["can_be_contacted"],
+            can_data_be_shared=validated_data["can_data_be_shared"],
         )
         return user
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if not instance.can_be_contacted:
+            representation["email"] = "Confidential"
+        return representation

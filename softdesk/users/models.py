@@ -5,6 +5,9 @@ from datetime import date
 
 class CustomUser(AbstractUser):
     date_of_birth = models.DateField(null=True, blank=True)
+    can_be_contacted = models.BooleanField(default=True)
+    can_data_be_shared = models.BooleanField(default=True)
+    last_connected = models.DateTimeField(null=True, blank=True)
 
     @property
     def age(self):
