@@ -4,6 +4,8 @@ from datetime import date
 
 
 class CustomUser(AbstractUser):
+    """User model and age verification"""
+
     date_of_birth = models.DateField(null=True, blank=True)
     can_be_contacted = models.BooleanField(default=True)
     can_data_be_shared = models.BooleanField(default=True)

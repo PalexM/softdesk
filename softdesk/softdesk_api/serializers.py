@@ -6,6 +6,8 @@ from rest_framework.exceptions import ValidationError
 
 
 class ClassifyUserId(serializers.ModelSerializer):
+    """Classify user informations if the user dont want to share his data"""
+
     class Meta:
         model = CustomUser
         fields = ["id"]
@@ -18,7 +20,6 @@ class ClassifyUserId(serializers.ModelSerializer):
         if request_user != instance:
             if not instance.can_data_be_shared:
                 representation["id"] = "Confidential"
-
         return representation["id"]
 
 

@@ -23,7 +23,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def validate_date_of_birth(self, value):
         try:
-            # Parse the date from dd/mm/yyyy format
             parsed_date = datetime.strptime(value, "%d/%m/%Y").date()
         except ValueError:
             raise serializers.ValidationError(
@@ -58,5 +57,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if not instance.can_be_contacted:
+            representation["username"] = "Confidential"
             representation["email"] = "Confidential"
         return representation

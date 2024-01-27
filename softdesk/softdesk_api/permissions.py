@@ -14,8 +14,14 @@ def is_contributor(user, project):
 
 class ProjectPermission(permissions.BasePermission):
     """
-    Custom permission to only allow authors of a project to edit or delete it.
+    Custom permission to only allow authors of a project to edit or delete it
+    Only connected users are allow to see some of data
     """
+
+    def has_permission(self, request, view):
+        if request.user.is_anonymous:
+            return False
+        return True
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
@@ -26,6 +32,7 @@ class ProjectPermission(permissions.BasePermission):
 class ContributorPermission(permissions.BasePermission):
     """
     Custom permission to allow any authenticated user to become a contributor.
+    Only connected users are allow to see some of data
     Only contributors of a project can access the project and its related resources (issues and comments).
     """
 
@@ -39,7 +46,8 @@ class ContributorPermission(permissions.BasePermission):
 class IssuePermission(permissions.BasePermission):
     """
     Custom permission to:
-    - Allow any authenticated user to view all issues.
+    - Allow any authenticated user to view all issues if is a contributor.
+    - Only connected users are allow to see some of data
     - Allow only the issue author to modify title, description, and to assign the issue to a project contributor.
     - Allow only project contributors to modify 'tag', 'priority', and 'status'.
     - Ensure that an issue can only be assigned to a project contributor.
@@ -71,10 +79,13 @@ class IssuePermission(permissions.BasePermission):
 class CommentPermission(permissions.BasePermission):
     """
     Custom permission to only allow contributors of the project associated with an issue to add a comment.
+    Only connected users are allow to see some of data
     Only the comment author or the issue author can delete the comment.
     """
 
     def has_permission(self, request, view):
+        if request.user.is_anonymous:
+            return False
         if request.method in permissions.SAFE_METHODS:
             return True
         elif request.method == "POST":

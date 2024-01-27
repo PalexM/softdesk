@@ -62,7 +62,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "softdesk_api.middleware.UpdateLastConnectedUserMiddleware",
+    "users.middleware.DailyTaskMiddleware",
 ]
 
 ROOT_URLCONF = "softdesk.urls"
