@@ -12,7 +12,6 @@ class DailyTaskMiddleware:
 
     def __call__(self, request):
         current_date = datetime.now().date()
-        print(DailyTaskMiddleware.last_run)
         if DailyTaskMiddleware.last_run != current_date:
             self.inactive_user()
             DailyTaskMiddleware.last_run = current_date

@@ -19,7 +19,7 @@ class ClassifyUserId(serializers.ModelSerializer):
         )
         if request_user != instance:
             if not instance.can_data_be_shared:
-                representation["id"] = "Confidential"
+                representation["id"] = representation["id"]
         return representation["id"]
 
 
@@ -62,7 +62,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["id", "description", "author", "issue"]
-        read_only_fields = ("author", "issue")
+        read_only_fields = ("author",)
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop("fields", None)
@@ -77,7 +77,8 @@ class CommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context["request"].user
         validated_data["author"] = user
-        return Comment.objects.create(**validated_data)
+        comment = Comment.objects.create(**validated_data)
+        return comment
 
 
 class IssueSerializer(serializers.ModelSerializer):
@@ -85,11 +86,7 @@ class IssueSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(
         many=True,
         read_only=True,
-        fields=(
-            "id",
-            "description",
-            "author",
-        ),
+        fields=("id", "description", "author", "issue"),
     )
 
     class Meta:

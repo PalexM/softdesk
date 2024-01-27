@@ -103,8 +103,6 @@ class CommentPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # Check if the request is a safe method (GET, HEAD, OPTIONS)
         if request.method == "PUT" or "PATCH":
-            print(request.user)
-            print(obj.author)
             if request.user == obj.author:
                 return True
             return False
